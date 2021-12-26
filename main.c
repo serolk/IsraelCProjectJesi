@@ -37,7 +37,8 @@ void printAllDictionaries(struct Dictionary *firstDictPtr, int numOfDicts) {
 }
 
 void printSelectedDictionaryName(struct Dictionary *firstDictPtr, int dictIndex) {
-    char **ptrLangs = (firstDictPtr + dictIndex)->languages;
+    char **ptrLangs = (char **) malloc(sizeof(char *));
+    ptrLangs = (firstDictPtr + dictIndex)->languages;
     int numOfLangs = (firstDictPtr + dictIndex)->numOfLanguages;
     printf("Enter a word in ");
     for (int j = 0; j < numOfLangs; ++j) {
@@ -49,13 +50,13 @@ void printSelectedDictionaryName(struct Dictionary *firstDictPtr, int dictIndex)
     }
 }
 
-void printTranslations(char **ptr_languages, int numOfLangs, struct Word *ptr_Word) {
+void printTranslations(char **ptr_languages, int numOfLangs, char **ptr_Word) {
     printf("The translations are:\n");
     for (int j = 1; j < numOfLangs; ++j) {
         if (j == numOfLangs - 1) {
-            printf("%s: %s\n", ptr_languages[j], ptr_Word->translations[j]);
+            printf("%s: %s\n", ptr_languages[j], ptr_Word[j]);
         } else {
-            printf("%s: %s,", ptr_languages[j], ptr_Word->translations[j]);
+            printf("%s: %s,", ptr_languages[j], ptr_Word[j]);
         }
     }
 }
@@ -86,29 +87,30 @@ void eraseDictionary(struct Dictionary *ptrDict, int selectedDict, int numberOfD
     free(ptrDict);
 }
 
-struct Word *wordSearch(struct Word *ptr_word) {
+char **wordSearch(struct Word *ptr_word) {
 
     char sourceWord[50];
     scanf("%s", sourceWord);
 //    strcmp()
-    char *destWord = ptr_word->translations[0];
+    char *destWord = (char *) malloc(sizeof(char));
+    destWord = ptr_word->translations[0];
     while (strcmp(sourceWord, destWord)) {
         if (!ptr_word->next)
             return NULL;
         ptr_word = ptr_word->next;
         destWord = ptr_word->translations[0];
     }
-    return destWord;
+    return ptr_word->translations;
 }
 
 int eraseWord(struct Word *ptr_word) {
     char sourceWord[50];
-    char *ptr_firstWord = ptr_word;
     scanf("%s", sourceWord);
-    printf("Are you sure? (y/n)");
-    char answer = 'n';
-    scanf("%c", &answer);
-    if (answer == 'y') {
+    printf("Are you sure? (y/n)\n");
+    char answer[1];
+    scanf("%s", answer);
+    if (answer[0] == 'y') {
+        int k = 0;
         char *destWord = ptr_word->translations[0];
         struct Word *ptr_previousWord = ptr_word;
         while (strcmp(sourceWord, destWord)) {
@@ -119,10 +121,11 @@ int eraseWord(struct Word *ptr_word) {
             ptr_previousWord = ptr_word;
             ptr_word = ptr_word->next;
             destWord = ptr_word->translations[0];
+            ++k;
         }
 
-        if (ptr_word == ptr_firstWord) {
-            ptr_firstWord = NULL; //Means first word deleted in dictionary;
+        if (k == 0) {
+            ptr_word = NULL; //Means first word deleted in dictionary;
             return 1;
         } else {
             ptr_previousWord->next = ptr_word->next;
@@ -130,7 +133,7 @@ int eraseWord(struct Word *ptr_word) {
             return 1;
         }
     } else {
-        printf("The deletion of the word has been canceled.");
+        printf("The deletion of the word has been canceled.\n");
         return 0;
     }
 }
@@ -166,7 +169,7 @@ int addWord(char **ptr_Translation) {
                 printf("dinamik bir blok elde edilemiyor!\n");
                 exit(EXIT_FAILURE);
             }
-            strcpy(ptr_Translation[numOfComma], ptr_Translation);
+            strcpy(ptr_Translation[numOfComma], words);
 
             printf("Diller PTR->: %s\n", ptr_Translation[numOfComma]);
             numOfWordLetter = 0;
@@ -287,11 +290,21 @@ void getFreeAllMemory(struct Dictionary *ptrDict, int numberOfDicts) {
 
 void main() {
 
+
     struct Dictionary *ptrDict;
     struct Dictionary *ptrNewDict;
+    struct Word *ptrWord;
+    ptrDict = (struct Dictionary*)malloc(sizeof(struct Dictionary));
+    ptrDict->wordList = ptrWord;
+    ptrDict->numOfLanguages = 3;
+
+    ptrNewDict = ptrDict;
+
+
+
     int numberOfDicts = 0;
     int selectedDictionaryIndex = -1;
-    struct Word *ptrWord;
+
 
 
     int x;
@@ -338,7 +351,8 @@ void main() {
                     (ptrDict + selectedDictionaryIndex)->wordList = ptrWord;
                 } else {
                     ptrWord = (struct Word *) malloc(sizeof(struct Word));
-                    struct Word *ptrLastWord = (ptrDict + selectedDictionaryIndex)->wordList->next;
+                    struct Word *ptrLastWord = (struct Word *) malloc(sizeof(struct Word));
+                    ptrLastWord = (ptrDict + selectedDictionaryIndex)->wordList->next;
                     int flag = 1;
                     while (flag) {
                         if (ptrLastWord->next != NULL)
@@ -349,6 +363,7 @@ void main() {
                     ptrLastWord->next = ptrWord;
                 }
                 ptrWord->translations = (char **) malloc(sizeof(char *));
+                ptrWord->next = NULL;
                 addWord((ptrWord)->translations);
                 printf("The word has been added successfully!\n");
                 free(ptrWord);
@@ -360,7 +375,7 @@ void main() {
                 if ((ptrDict + selectedDictionaryIndex)->wordList != NULL) {
                     printSelectedDictionaryMainName(ptrDict, selectedDictionaryIndex);
                     if(eraseWord((ptrDict + selectedDictionaryIndex)->wordList))
-                        printf("The word has been deleted successfully!");
+                        printf("The word has been deleted successfully!\n");
                 } else {
                     printf("This option is not available right now, try again:\n");
                 }
@@ -371,7 +386,8 @@ void main() {
                 selectedDictionaryIndex = selectDictionary(ptrDict) - 1;
                 if ((ptrDict + selectedDictionaryIndex)->wordList != NULL) {
                     printSelectedDictionaryMainName(ptrDict, selectedDictionaryIndex);
-                    struct Word *wrdSearch = wordSearch((ptrDict + selectedDictionaryIndex)->wordList);
+                    char **wrdSearch = (char *) malloc(sizeof(char *));
+                    wrdSearch = wordSearch((ptrDict + selectedDictionaryIndex)->wordList);
                     if (wrdSearch != NULL)
                         printTranslations((ptrDict + selectedDictionaryIndex)->languages,
                                           (ptrDict + selectedDictionaryIndex)->numOfLanguages, wrdSearch);
@@ -420,3 +436,5 @@ void main() {
     }
 
 }
+
+//3 numaralı sözcük silme de kaldım.
