@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <math.h>
-#include <unistd.h>
-
 #define ARRAY_SIZE 200
 
 
@@ -451,9 +448,16 @@ void main() {
                             printf("The deletion of the dictionary has failed!\n");
                             exit(EXIT_FAILURE);
                         }
-                        eraseDictionary(ptrDict, selectedDictionaryIndex, numberOfDicts, ptrNewDict);
-                        ptrDict = ptrNewDict;
-                        numberOfDicts--;
+                        printf("Are you sure? (y/n)\n");
+                        char answer[1];
+                        scanf("%s", answer);
+                        if (answer[0] == 'y') {
+                            eraseDictionary(ptrDict, selectedDictionaryIndex, numberOfDicts, ptrNewDict);
+                            ptrDict = ptrNewDict;
+                            numberOfDicts--;
+                        } else {
+                            printf("The deletion of the dictionary has been canceled.\n");
+                        }
                     }
                 } else {
                     printf("This option is not available right now, try again:\n");
