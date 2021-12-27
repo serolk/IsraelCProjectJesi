@@ -465,7 +465,7 @@ void main() {
                 break;
             case 6:
 //                getFreeAllMemory(ptrDict, numberOfDicts);
-                printf("Bye");
+                printf("Bye!");
                 free(ptrNewDict);
                 free(ptrDict);
 //                exit(0);
