@@ -198,6 +198,16 @@ void addDictionary(char **ptr_languages, int *ptr_numOfLanguages) {
     *ptr_numOfLanguages = numOfComma;
 }
 
+void printMenu(){
+    printf("Choose an option : \n");
+    printf("1. Create a new dictionary.\n");
+    printf("2. Add a word to a dictionary.\n");
+    printf("3. Delete a word from a dictionary.\n");
+    printf("4. Find a word in a dictionary.\n");
+    printf("5. Delete a dictionary.\n");
+    printf("6. Exit.\n");
+}
+
 void main() {
 
     struct Dictionary *ptrDict;
@@ -208,14 +218,8 @@ void main() {
 
     int x;
     printf("Welcome to the dictionaries manager!\n");
+    printMenu();
     while (x != 6) {
-        printf("Choose an option : \n");
-        printf("1. Create a new dictionary.\n");
-        printf("2. Add a word to a dictionary.\n");
-        printf("3. Delete a word from a dictionary.\n");
-        printf("4. Find a word in a dictionary.\n");
-        printf("5. Delete a dictionary.\n");
-        printf("6. Exit.\n");
         scanf("%d", &x);
         switch (x) {
             case 1:
@@ -410,11 +414,9 @@ void main() {
                 }
                 break;
             case 6:
-//                getFreeAllMemory(ptrDict, numberOfDicts);
                 printf("Bye!");
                 free(ptrNewDict);
                 free(ptrDict);
-//                exit(0);
                 break;
 
             default:
@@ -424,5 +426,3 @@ void main() {
     }
 
 }
-
-//sözlüğe eklenen ilk kelimeyi (4) ile bulamıyor.
