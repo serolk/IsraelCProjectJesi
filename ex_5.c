@@ -60,7 +60,6 @@ void printTranslations(char **ptr_languages, int numOfLangs, char **ptr_Word) {
 
 void printSelectedDictionaryMainName(struct Dictionary *firstDictPtr, int dictIndex) {
     char **ptrLangs = (firstDictPtr + dictIndex)->languages;
-    int numOfLangs = (firstDictPtr + dictIndex)->numOfLanguages;
     printf("Enter a word in %s\n", ptrLangs[0]);
 }
 
@@ -82,61 +81,6 @@ void eraseDictionary(struct Dictionary *ptrDict, int selectedDict, int numberOfD
         }
     }
     free(ptrDict);
-}
-
-char **wordSearch(struct Word *ptr_word) {
-
-    char sourceWord[50];
-    scanf("%s", sourceWord);
-//    strcmp()
-    char *destWord;// = (char *) malloc(sizeof(char));
-    destWord = ptr_word->translations[0];
-
-    while (strcmp(sourceWord, destWord)) {
-        if (!ptr_word->next) {
-            printf("There are no translations for '%s' in this dictionary.\n", sourceWord);
-            return NULL;
-        }
-        ptr_word = ptr_word->next;
-        destWord = ptr_word->translations[0];
-    }
-    return ptr_word->translations;
-}
-
-int eraseWord(struct Word *ptr_word) {
-    printf("in erase -> %p :", ptr_word);
-    char sourceWord[50];
-    scanf("%s", sourceWord);
-    printf("Are you sure? (y/n)\n");
-    char answer[1];
-    scanf("%s", answer);
-    if (answer[0] == 'y') {
-        int k = 0;
-        char *destWord = ptr_word->translations[0];
-        struct Word *ptr_previousWord = ptr_word;
-        while (strcmp(sourceWord, destWord)) {
-            if (!ptr_word->next) {//is Last word in linkedList?
-                printf("Word doesn't found");
-                return 0;
-            }
-            ptr_previousWord = ptr_word;
-            ptr_word = ptr_word->next;
-            destWord = ptr_word->translations[0];
-            ++k;
-        }
-
-        if (k == 0) {
-            ptr_word = NULL; //Means first word deleted in dictionary;
-            return 1;
-        } else {
-            ptr_previousWord->next = ptr_word->next;
-            free(ptr_word);
-            return 1;
-        }
-    } else {
-        printf("The deletion of the word has been canceled.\n");
-        return 0;
-    }
 }
 
 int addWord(char **ptr_Translation) {
@@ -199,7 +143,6 @@ void addDictionary(char **ptr_languages, int *ptr_numOfLanguages) {
     char entry[ARRAY_SIZE];
     //Getting Languages for Dictionary on Keyboard:
     printf("Define a new dictionary: ");
-//    gets(entry);
     scanf("%s", entry);
     //Parsing string by ",":
     char val = entry[0];
@@ -255,19 +198,7 @@ void addDictionary(char **ptr_languages, int *ptr_numOfLanguages) {
     *ptr_numOfLanguages = numOfComma;
 }
 
-void getFreeAllMemory(struct Dictionary *ptrDict, int numberOfDicts) {
-//    char *ptr;
-//    Word *wordList;
-//    for (int i = 0; i < numberOfDicts; ++i) {
-//        ptr = ptrDict[i].languages;
-//        for (int j = 0; j < ptr; ++j) {
-//
-//        }
-//    }
-}
-
 void main() {
-
 
     struct Dictionary *ptrDict;
     struct Dictionary *ptrNewDict;
@@ -333,11 +264,6 @@ void main() {
                             exit(EXIT_FAILURE);
                         }
                         struct Word *ptrLastWord;// = (struct Word *) malloc(sizeof(struct Word));
-//                        if ((ptrDict + selectedDictionaryIndex)->wordList->next == NULL) {
-//                            ptrLastWord = (ptrDict + selectedDictionaryIndex)->wordList; //means only one word added
-//                        } else {
-//                            ptrLastWord = (ptrDict + selectedDictionaryIndex)->wordList->next;
-//                        }
 
                         ptrLastWord = (ptrDict + selectedDictionaryIndex)->wordList;
                         int flag = 1;
@@ -357,7 +283,7 @@ void main() {
                     ptrWord->next = NULL;
                     addWord((ptrWord)->translations);
                     printf("The word has been added successfully!\n");
-                    free(ptrWord);
+//                    free(ptrWord);
                 } else {
                     printf("This option is not available right now, try again:\n");
                 }
@@ -423,7 +349,27 @@ void main() {
                     if ((ptrDict + selectedDictionaryIndex)->wordList != NULL) {
                         printSelectedDictionaryMainName(ptrDict, selectedDictionaryIndex);
                         char **wrdSearch; // = (char *) malloc(sizeof(char *));
-                        wrdSearch = wordSearch((ptrDict + selectedDictionaryIndex)->wordList);
+                        char sourceWord[50];
+                        scanf("%s", sourceWord);
+                        struct Word *ptr_word = (ptrDict + selectedDictionaryIndex)->wordList;
+
+                        char *destWord;// = (char *) malloc(sizeof(char));
+                        destWord = ptr_word->translations[0];
+                        while (strcmp(sourceWord, destWord)) {
+                            if (!ptr_word->next) {
+                                printf("There are no translations for '%s' in this dictionary.\n", sourceWord);
+                                wrdSearch = NULL;
+                                break;
+                            }
+                            ptr_word = ptr_word->next;
+                            destWord = ptr_word->translations[0];
+                        }
+                        if(strcmp(sourceWord, destWord)){
+                            wrdSearch = NULL;
+                        } else {
+                            wrdSearch = ptr_word->translations;
+                        }
+
                         if (wrdSearch != NULL)
                             printTranslations((ptrDict + selectedDictionaryIndex)->languages,
                                               (ptrDict + selectedDictionaryIndex)->numOfLanguages, wrdSearch);
