@@ -199,6 +199,7 @@ void addDictionary(char **ptr_languages, int *ptr_numOfLanguages) {
 }
 
 void printMenu(){
+    printf("Welcome to the dictionaries manager!\n");
     printf("Choose an option : \n");
     printf("1. Create a new dictionary.\n");
     printf("2. Add a word to a dictionary.\n");
@@ -217,7 +218,7 @@ void main() {
     int selectedDictionaryIndex = -1;
 
     int x;
-    printf("Welcome to the dictionaries manager!\n");
+
     printMenu();
     while (x != 6) {
         scanf("%d", &x);
